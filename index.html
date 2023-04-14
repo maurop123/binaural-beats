@@ -57,16 +57,37 @@
         const val = document.getElementById("rightStereo").value
         osc2.frequency.value = val
       }
+
+      //Set time (seconds) to play beat for
+      let time = 0  // default 0
+      function setTime() {
+        time = document.getElementById("timeInput").value
+      }
+
+      //Play beat for time
+      function play() {
+        if (time > 0) {
+          resume()
+          setTimeout(() => {
+            pause()
+          }, time * 1000)  // time in seconds
+        }
+        else {  // time = 0. so play curr beat till paused
+          resume()
+        }
+      }
     </script>
   </head>
   <body>
     <player>
+      <button onclick="play()">Play</button>
       <button onclick="resume()">Resume</button>
       <button onclick="pause()">Pause</button>
     </player>
     <form>
       <input id="leftStereo" type="number" value=440 onchange="updateLeftStereo()"/>
       <input id="rightStereo" type="number" value=435 onchange="updateRightStereo()"/>
+      <input id="timeInput" type="number" value=0 onchange="setTime()"/>
     </form>
   </body>
 </html>
