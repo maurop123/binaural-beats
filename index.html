@@ -64,8 +64,35 @@
         time = document.getElementById("timeInput").value
       }
 
+      //Add Beat to Sequence
+      const sequence = []
+      console.log('new sequence', sequence)
+      function addBeat() {
+        const beat = {
+          freq1: osc1.frequency.value,
+          freq2: osc2.frequency.value,
+          time
+        }
+
+        sequence.push( beat )
+      }
+
+      //Add Beat to HTML Table
+      Object.defineProperty(sequence, "push", {
+        value: () => {
+          console.log('proxy push')
+          // Make table HTML elements
+          const newRow = `<tr><td>freq1</td><td>freq2</td><td>time</td></tr>`
+          document.getElementById('sequenceTable').innerHTML = newRow
+
+          // Remember to still push!
+          sequence.push(arguments)
+          console.log('pushed sequence', sequence)
+        }
+      })
+
       //Play beat for time
-      function play() {
+      function playSequence() {
         if (time > 0) {
           resume()
           setTimeout(() => {
@@ -79,15 +106,23 @@
     </script>
   </head>
   <body>
+    <!-- Play and Pause -->
     <player>
-      <button onclick="play()">Play</button>
-      <button onclick="resume()">Resume</button>
-      <button onclick="pause()">Pause</button>
+      <button id="playBtn" onclick="resume()">Play</button>
+      <button id="pauseBtn" onclick="pause()">Pause</button>
     </player>
-    <form>
+
+    <!-- Frequencies and Time -->
+    <div>
       <input id="leftStereo" type="number" value=440 onchange="updateLeftStereo()"/>
       <input id="rightStereo" type="number" value=435 onchange="updateRightStereo()"/>
       <input id="timeInput" type="number" value=0 onchange="setTime()"/>
-    </form>
+      <button id="addBeatBtn" onclick="addBeat()"> + </button>
+    </div>
+
+    <!-- Sequence of Beats -->
+    <button id="playSequenceBtn" onclick="playSequence()">Play</button>
+    <table id="sequenceTable">
+    </table>
   </body>
 </html>
