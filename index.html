@@ -1,4 +1,8 @@
 <html>
+  <!-- Import Vue -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <!-- Main -->
   <head>
     <script>
       //Channel 1
@@ -76,6 +80,7 @@
           resume()
         }
       }
+
     </script>
   </head>
   <body>
@@ -84,10 +89,42 @@
       <button onclick="resume()">Resume</button>
       <button onclick="pause()">Pause</button>
     </player>
-    <form>
-      <input id="leftStereo" type="number" value=440 onchange="updateLeftStereo()"/>
-      <input id="rightStereo" type="number" value=435 onchange="updateRightStereo()"/>
-      <input id="timeInput" type="number" value=0 onchange="setTime()"/>
-    </form>
+    <div id="app">
+      <div id="beatProps">
+        <input id="leftStereo" type="number" value=440 onchange="updateLeftStereo()"/>
+        <input id="rightStereo" type="number" value=435 onchange="updateRightStereo()"/>
+        <input id="timeInput" type="number" value=0 onchange="setTime()"/>
+        <button id="addBeatBtn" @click="addBeat()"> + </button>
+      </div>
+      <table id="sequenceTable">
+        <tr v-for="beat in sequence">
+          <td>{{ beat.freq1 }}</td>
+          <td>{{ beat.freq2 }}</td>
+          <td>{{ beat.time }}</td>
+        </tr>
+      </table>
+    </div>
   </body>
+
+  <!-- Vue Script -->
+  <script>
+    const { createApp } = Vue
+
+    createApp({
+      data() {
+        return {
+          sequence: [],
+        }
+      },
+      methods: {
+        addBeat() {
+          this.sequence.push({
+            freq1: osc1.frequency.value,
+            freq2: osc2.frequency.value,
+            time: time
+          })
+        }
+      }
+    }).mount('#app')
+  </script>
 </html>
