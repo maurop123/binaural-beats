@@ -68,60 +68,27 @@
         time = document.getElementById("timeInput").value
       }
 
-      //Add Beat to Sequence
-      const sequence = []
-      console.log('new sequence', sequence)
-      function addBeat() {
-        const beat = {
-          freq1: osc1.frequency.value,
-          freq2: osc2.frequency.value,
-          time
-        }
-
-        sequence.push( beat )
-      }
-
-      //Add Beat to HTML Table
-      Object.defineProperty(sequence, "push", {
-        value: () => {
-          console.log('proxy push')
-          // Make table HTML elements
-          const newRow = `<tr><td>freq1</td><td>freq2</td><td>time</td></tr>`
-          document.getElementById('sequenceTable').innerHTML = newRow
-
-          // Remember to still push!
-          sequence.push(arguments)
-          console.log('pushed sequence', sequence)
-        }
-      })
-
-      //Play beat for time
-      function playSequence() {
+      function play() {
+        resume()
         if (time > 0) {
-          resume()
-          setTimeout(() => {
-            pause()
-          }, time * 1000)  // time in seconds
-        }
-        else {  // time = 0. so play curr beat till paused
-          resume()
+          setTimeout(pause, time * 1000)
         }
       }
-
     </script>
   </head>
   <body>
     <player>
-      <button id="playBtn" onclick="resume()">Play</button>
+      <button id="playBtn" onclick="play()">Play</button>
       <button id="pauseBtn" onclick="pause()">Pause</button>
     </player>
     <div id="app">
-      <div id="beatProps">
+      <div id="beatProps" style="margin-bottom:10px">
         <input id="leftStereo" type="number" value=440 onchange="updateLeftStereo()"/>
         <input id="rightStereo" type="number" value=435 onchange="updateRightStereo()"/>
         <input id="timeInput" type="number" value=0 onchange="setTime()"/>
         <button id="addBeatBtn" @click="addBeat()"> + </button>
       </div>
+      <button id="playSequenceBtn" @click="playSequence()">Play Sequence</button>
       <table id="sequenceTable">
         <tr v-for="beat in sequence">
           <td>{{ beat.freq1 }}</td>
@@ -149,6 +116,19 @@
             freq2: osc2.frequency.value,
             time: time
           })
+        },
+        playSequence(beatId=0) {
+          console.log('play sequence')
+          const beat = this.sequence[beatId]
+          osc1.frequency.value = beat.freq1
+          osc2.frequency.value = beat.freq2
+          time = beat.time
+          play()
+          setTimeout(() => {
+            if (this.sequence.length > (beatId + 1)) {
+              this.playSequence(beatId+1)
+            }
+          }, beat.time * 1000)
         }
       }
     }).mount('#app')
